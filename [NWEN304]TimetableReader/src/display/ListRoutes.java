@@ -23,111 +23,136 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.SimpleAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class ListRoutes extends ListActivity {
 
-	//private ListView mainListView ;
-	private ArrayAdapter<String> listAdapter ;
-
-
-	private Map<Integer, ArrayList<Document>> routes;
-	private Map<Integer, ArrayList<Document>> trips;
-	private Map<Integer, ArrayList<Document>> stopTimes;
-	private Map<Integer, ArrayList<Document>> stops;
-
-	private Map<Integer, Document> positions;
+    private static final String TAG_ID = "route_id";
+    private static final String TAG_NAME = "route_long_name";
 
 
 
 
-	/** Called when the activity is first created. */
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		//setContentView(R.layout.main);
+    private Map<Integer, ArrayList<Document>> routes;
+    private Map<Integer, ArrayList<Document>> trips;
+    private Map<Integer, ArrayList<Document>> stopTimes;
+    private Map<Integer, ArrayList<Document>> stops;
 
-		//Initialize Positions
-		positions= new HashMap<Integer, Document>();
-
-
-
-		// Create and populate the maps of information of planet names.
-		listAdapter=loadFeed();
-
-
-		// Set the ArrayAdapter as the ListView's adapter.
-		setListAdapter(listAdapter);
-
-	}
-
-
-	@Override
-	protected void onListItemClick(ListView l, View v, int position, long id) {
-
-		//Selected Document
-		Document selectedDoc=positions.get(position);
-
-		//Cast Document to Route
-		Route selectedRoute = (Route) selectedDoc;
-
-		//Route ID of selectedRoute
-		int selectedRouteID = selectedRoute.getKey();
-
-		Toast.makeText(this, "Selected Route "+selectedRouteID, Toast.LENGTH_LONG).show();
-
-		//
-		Intent i = new Intent(this, TabbedTrips.class);
-		Bundle b = new Bundle();
-		b.putInt("selectedRoute", selectedRouteID); //Your id
-		i.putExtras(b);
-		startActivity(i);
-
-
-	}
+    private Map<Integer, Document> positions;
 
 
 
 
+    /** Called when the activity is first created. */
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+	super.onCreate(savedInstanceState);
+	setContentView(R.layout.main);
+
+	//Initialize Positions
+	positions= new HashMap<Integer, Document>();
+
+	TextView textView =(TextView) findViewById(R.id.description);
+	textView.setText("Please pick a route from the following list");
+
+
+	// Create and populate the maps of information of planet names.
 
 
 
-	private ArrayAdapter<String> loadFeed() {
-		try{
-			SaxFeedParser parser = new SaxFeedParser();
+	// Set the ArrayAdapter as the ListView's adapter.
+	setListAdapter(loadFeed());
+
+    }
 
 
-			//Parse xml documents
-			routes = parser.parse("http://homepages.ecs.vuw.ac.nz/~wijosknich/routes.xml", Document.type.ROUTE);
-			//trips = parser.parse("http://homepages.ecs.vuw.ac.nz/~wijosknich/trips.xml", Document.type.TRIP);
-			//stops = parser.parse("http://homepages.ecs.vuw.ac.nz/~wijosknich/stops.xml", Document.type.STOP);
-			//stopTimes = parser.parse("http://homepages.ecs.vuw.ac.nz/~wijosknich/stop_times.xml", Document.type.STOPTIME);
+    @Override
+    protected void onListItemClick(ListView l, View v, int position, long id) {
+
+	//Selected Document
+	Document selectedDoc=positions.get(position);
+
+	//Cast Document to Route
+	Route selectedRoute = (Route) selectedDoc;
+
+	//Route ID of selectedRoute
+	int selectedRouteID = selectedRoute.getKey();
+
+	Toast.makeText(this, "Selected Route "+selectedRouteID, Toast.LENGTH_LONG).show();
+
+	//
+	Intent i = new Intent(this, TabbedTrips.class);
+	Bundle b = new Bundle();
+	b.putInt("selectedRoute", selectedRouteID); //Your id
+	i.putExtras(b);
+	startActivity(i);
+
+
+    }
 
 
 
-			//Display route list
-			List<String> titles = new ArrayList<String>();
-			int pos=0;
-			for (Integer key : routes.keySet()){
-				Log.d("Key", ""+key);
-				for(Document doc: routes.get(key)){
-					titles.add(doc.getKey() + ": " + doc.getValue("route_long_name"));
-					positions.put(pos,doc);
-					pos++;
-				}
-
-			}
-
-			return new ArrayAdapter<String>(this, R.layout.simplerow,titles);
 
 
-		} catch (Throwable t){
-			Log.e("AndroidNews",t.getMessage(),t);
-			return null;
+
+
+    private ListAdapter loadFeed() {
+	try{
+	    SaxFeedParser parser = new SaxFeedParser();
+
+
+	    //Parse xml documents
+	    routes = parser.parse("http://homepages.ecs.vuw.ac.nz/~venkatsrir/routes.xml", Document.type.ROUTE);
+
+
+
+	    //Display route list
+	    List<HashMap<String, String>> titles = new ArrayList<HashMap<String, String>>();
+
+	    //Description
+
+
+
+
+	    int pos=0;
+	    for (Integer key : routes.keySet()){
+		Log.d("Key", ""+key);
+		for(Document doc: routes.get(key)){
+		    HashMap<String, String> map = new HashMap<String, String>();
+		    String id="Route ID: " + doc.getKey();
+		    String name="Name: "+doc.getValue(TAG_NAME);
+		    map = new HashMap<String, String>();
+		    map.put(TAG_ID, id);
+                    map.put(TAG_NAME, name);
+		    positions.put(pos,doc);
+		    pos++;
+
+		    titles.add(map);
 		}
 
+	    }
+
+
+
+
+
+	    // adding HashList to ArrayList
+
+
+	    ListAdapter adapter = new SimpleAdapter(this, titles,R.layout.routesitem,new String[] { TAG_NAME, TAG_ID}, new int[] { R.id.routeName, R.id.routeID});
+
+	    return adapter;
 	}
+	catch (Throwable t){
+	    Log.e("AndroidNews",t.getMessage(),t);
+	    return null;
+	}
+
+    }
 
 
 

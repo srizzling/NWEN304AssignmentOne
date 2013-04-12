@@ -83,7 +83,8 @@ public class ListOutbound extends ListActivity {
 		int selectedID = Integer.parseInt(selectedTrip.getValue("trip_id"));
 
 
-		Toast.makeText(this, "Selected Trip ID "+selectedID, Toast.LENGTH_LONG).show();
+		Log.d("SelectedTrip",""+selectedID);
+
 		Intent i = new Intent(this, ListOutbound.class);
 		Bundle b = new Bundle();
 		b.putInt("selectedTrip", selectedID); //Your id
