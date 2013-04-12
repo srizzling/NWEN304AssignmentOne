@@ -6,12 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.restfb.Connection;
-import com.restfb.DefaultFacebookClient;
-import com.restfb.FacebookClient;
-import com.restfb.types.Page;
-import com.restfb.types.Post;
-import com.restfb.types.User;
 import com.windrealm.android.Document;
 import com.windrealm.android.R;
 import com.windrealm.android.Route;
@@ -82,13 +76,13 @@ public class ListRoutes extends ListActivity {
 		int selectedRouteID = selectedRoute.getKey();
 
 		Toast.makeText(this, "Selected Route "+selectedRouteID, Toast.LENGTH_LONG).show();
-		
+
 		//
 		Intent i = new Intent(this, TabbedTrips.class);
 		Bundle b = new Bundle();
 		b.putInt("selectedRoute", selectedRouteID); //Your id
 		i.putExtras(b);
-		startActivity(i); 
+		startActivity(i);
 
 
 	}
