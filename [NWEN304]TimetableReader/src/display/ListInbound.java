@@ -25,7 +25,7 @@ public class ListInbound extends ListActivity {
 
 
 	private Map<Integer, ArrayList<Document>> trips;
-	
+
 
 	private Map<Integer, Document> positions;
 
@@ -63,10 +63,10 @@ public class ListInbound extends ListActivity {
 		Trip selectedTrip = (Trip) selectedDoc;
 
 		//Trip ID of trip
-		int selectedID = Integer.parseInt(selectedTrip.getValue("trip_id"));		
+		int selectedID = Integer.parseInt(selectedTrip.getValue("trip_id"));
 
+		Log.d("SelectedTrip",""+selectedID);
 
-		Toast.makeText(this, "Selected Trip ID "+selectedID, Toast.LENGTH_LONG).show();
 		Intent i = new Intent(this, ListInbound.class);
 		Bundle b = new Bundle();
 		b.putInt("selectedTrip", selectedID); //Your id
@@ -96,7 +96,7 @@ public class ListInbound extends ListActivity {
 			List<String> titles = new ArrayList<String>();
 			int pos=0;
 
-			//Key 
+			//Key
 			Bundle b = getIntent().getExtras();
 			int key=b.getInt("selectedRoute");
 

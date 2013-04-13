@@ -14,12 +14,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.restfb.Connection;
-import com.restfb.DefaultFacebookClient;
-import com.restfb.FacebookClient;
-import com.restfb.types.Page;
-import com.restfb.types.Post;
-import com.restfb.types.User;
 import com.windrealm.android.Document;
 import com.windrealm.android.R;
 import com.windrealm.android.Route;
@@ -86,10 +80,11 @@ public class ListOutbound extends ListActivity {
 		Trip selectedTrip = (Trip) selectedDoc;
 
 		//Trip ID of trip
-		int selectedID = Integer.parseInt(selectedTrip.getValue("trip_id"));		
-		
+		int selectedID = Integer.parseInt(selectedTrip.getValue("trip_id"));
 
-		Toast.makeText(this, "Selected Trip ID "+selectedID, Toast.LENGTH_LONG).show();
+
+		Log.d("SelectedTrip",""+selectedID);
+
 		Intent i = new Intent(this, ListOutbound.class);
 		Bundle b = new Bundle();
 		b.putInt("selectedTrip", selectedID); //Your id
@@ -118,11 +113,11 @@ public class ListOutbound extends ListActivity {
 			//Display route list
 			List<String> titles = new ArrayList<String>();
 			int pos=0;
-			
-			//Key 
+
+			//Key
 			Bundle b = getIntent().getExtras();
 			int key=b.getInt("selectedRoute");
-			
+
 
 			for(Document doc: trips.get(key)){
 				if(Integer.parseInt(doc.getValue("direction_id"))==0){
