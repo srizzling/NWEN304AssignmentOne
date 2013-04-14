@@ -1,19 +1,19 @@
-package com.windrealm.android;
+package sriram.android.parser;
 
 import java.util.HashMap;
 import java.util.Set;
 
-public class Route implements Document{
+public class Stop implements Document{
 
 	private HashMap<String,String> tagMap = new HashMap<String,String>();
 
-	private String[] fields = {"route_short_name", "route_id", "agency_id", "route_long_name", "route_desc", "route_type"};
+	private String[] fields = {"stop_id", "check", "stop_name", "stop_lat", "stop_lon"};
 
 	public int getKey(){
-		return Integer.parseInt(tagMap.get("route_short_name"));
+		return Integer.parseInt(tagMap.get("stop_id"));
 	}
 
-	public Route(){
+	public Stop(){
 		for(int i = 0; i < fields.length; i++){
 			tagMap.put(fields[i], "");
 		}
@@ -30,6 +30,10 @@ public class Route implements Document{
 
 	public String getValue(String key) {
 		return tagMap.get(key);
+	}
+	
+	public String getKeyName(){
+		return "stop_id";
 	}
 
 }

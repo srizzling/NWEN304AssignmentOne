@@ -1,4 +1,4 @@
-package com.windrealm.android;
+package sriram.android.parser;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -6,6 +6,8 @@ import java.util.Map;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
+
+import android.util.Log;
 
 
 
@@ -15,6 +17,7 @@ public class XmlHandler extends DefaultHandler{
 	private StringBuilder builder;
 
 	private Document.type type;
+	private int requestKey;
 
 	public Map<Integer,ArrayList<Document>> getItems(){
 		return this.items;
@@ -23,6 +26,12 @@ public class XmlHandler extends DefaultHandler{
 	public XmlHandler(Document.type docType){
 		super();
 		this.type = docType;
+	}
+
+	public XmlHandler(Document.type docType, int requestKey){
+		super();
+		this.type = docType;
+		this.requestKey = requestKey;
 	}
 
 	@Override
@@ -34,12 +43,20 @@ public class XmlHandler extends DefaultHandler{
 	@Override
 	public void endElement(String uri, String localName, String name) throws SAXException {
 		super.endElement(uri, localName, name);
+
 		if (this.currentItem != null){
-			for(String tag: currentItem.getTags()){
-				if(localName.trim().equals(tag)){
+			if(requestKey!=1 && localName.startsWith(currentItem.getKeyName())){
+				int key = Integer.parseInt(builder.toString().trim());
+				if(requestKey==key){
+					//Key
 					currentItem.setTag(localName, builder.toString().trim());
 				}
 			}
+
+			if(currentItem.getTags().contains(localName.trim())){
+				currentItem.setTag(localName, builder.toString().trim());
+			}
+
 			if (localName.equalsIgnoreCase("record")){
 				addDocument();
 			}
@@ -70,9 +87,9 @@ public class XmlHandler extends DefaultHandler{
 	@Override
 	public void startElement(String uri, String localName, String name, Attributes attributes) throws SAXException {
 		super.startElement(uri, localName, name, attributes);
+		
 
 		if (localName.startsWith("record")){
-
 			switch(type){
 			case ROUTE:
 				currentItem = new Route();
@@ -87,7 +104,12 @@ public class XmlHandler extends DefaultHandler{
 				currentItem = new Stop();
 				break;
 			}
-
+		} else if(currentItem!=null && !currentItem.getTags().contains(localName.trim())){
+			
 		}
+
+
+
+
 	}
 }

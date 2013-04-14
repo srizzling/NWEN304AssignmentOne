@@ -1,4 +1,4 @@
-package com.windrealm.android;
+package sriram.android.parser;
 
 import java.util.HashMap;
 import java.util.Set;
@@ -30,6 +30,10 @@ public class Trip implements Document{
 
 	public String getValue(String key) {
 		return tagMap.get(key);
+	}
+	
+	public String getKeyName(){
+		return "route_id";
 	}
 
 }
