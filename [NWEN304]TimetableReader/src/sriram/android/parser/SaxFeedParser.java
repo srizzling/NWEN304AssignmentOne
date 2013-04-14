@@ -2,6 +2,7 @@ package sriram.android.parser;
 
 import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,7 +21,10 @@ import org.xml.sax.InputSource;
 
 import android.app.Activity;
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.util.Log;
+import android.widget.Toast;
 
 public class SaxFeedParser extends Activity{
 
@@ -61,30 +65,44 @@ public class SaxFeedParser extends Activity{
 			//create the new connection
 			File file = new File("//sdcard//", type);
 			if (file.exists()) {
-			 Log.d("fileExists","wooo");
+				FileInputStream in = new FileInputStream("//sdcard//"+type);
+				return in;
+			}
+			else if (isNetworkAvailable()) {
+				InputStream input = new BufferedInputStream(url.openStream());
+				OutputStream output = new FileOutputStream("//sdcard//"+type);
+
+				byte data[] = new byte[1024];
+				int count;
+				while ((count = input.read(data)) != -1) {
+					output.write(data, 0, count);
+				}
+
+				output.flush();
+				output.close();
+				input.close();
+
+				return url.openConnection().getInputStream();
 			}
 			else{
-				 Log.d("Doesn't","ecist");
+				try {
+					throw new NoInternetConnectionException();
+				} catch (NoInternetConnectionException e) {
+					Toast.makeText(getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();
+				}
 			}
-			InputStream input = new BufferedInputStream(url.openStream());
-			OutputStream output = new FileOutputStream("//sdcard//test.xml");
-
-			byte data[] = new byte[1024];
-			long total = 0;
-			int count;
-			while ((count = input.read(data)) != -1) {
-				total += count;
-				output.write(data, 0, count);
-			}
-
-			output.flush();
-			output.close();
-			input.close();
-
-			return url.openConnection().getInputStream();
+		
 
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
+		return null;
+	}
+	
+	private boolean isNetworkAvailable() {
+	    ConnectivityManager connectivityManager 
+	         = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+	    NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+	    return activeNetworkInfo != null;
 	}
 }

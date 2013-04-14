@@ -65,7 +65,7 @@ public class ListTimetable extends ListActivity {
 		positions= new HashMap<Integer, Document>();
 
 		TextView textView =(TextView) findViewById(R.id.description);
-		textView.setText("Please pick a route from the following list");
+		textView.setText("These are the departure times and stop names:");
 
 
 
